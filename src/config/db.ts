@@ -6,6 +6,18 @@ export const pool = new Pool({
   connectionString: `${config.connection_str}`,
 });
 
-const initDB = async () => {};
+const initDB = async () => {
+  await pool.query(`
+        CREATE TABLE IF NOT EXISTS Users(
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(150) UNIQUE NOT NULL CHECK (email = LOWER(email)),
+        password TEXT NOT NULL CHECK (LENGTH(password) >= 6),
+        phone VARCHAR(15) NOT NULL,
+        role VARCHAR(20) CHECK (role IN ('admin', 'customer'))
+        )
+        `);
+  console.log("Database Connected");
+};
 
 export default initDB;
