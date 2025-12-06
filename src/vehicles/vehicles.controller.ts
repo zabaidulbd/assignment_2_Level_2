@@ -36,7 +36,24 @@ const getVehicles = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleVehicle = async (req: Request, res: Response) => {
+  try {
+    const result = await vehicleServices.getSingleVehicle(
+      req.params.id as string
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Vehicles not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Can not reach vehicles" });
+  }
+};
+
 export const vehiclesControllers = {
   createVehicles,
   getVehicles,
+  getSingleVehicle,
 };
