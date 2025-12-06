@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { authRoute } from "./auth/auth.route";
 import initDB from "./config/db";
+import { vehiclesRoutes } from "./vehicles/vehicles.routes";
 
 const app = express();
 // parser
@@ -10,6 +11,7 @@ app.use(express.json());
 initDB();
 
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/vehicles", vehiclesRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("from app ts files");
