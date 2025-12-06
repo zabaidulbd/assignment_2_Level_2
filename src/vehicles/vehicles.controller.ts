@@ -68,11 +68,27 @@ const updateVehicle = async (req: Request, res: Response) => {
         data: result.rows[0],
       });
     }
-
-    // res.json(result.rows[0]);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to update vehicle" });
+  }
+};
+
+const deleteVehicle = async (req: Request, res: Response) => {
+  try {
+    const result = await vehicleServices.deleteVehicle(req.params.id!);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Vehicle not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "vehicle deleted successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to delete vechile" });
   }
 };
 
@@ -81,4 +97,5 @@ export const vehiclesControllers = {
   getVehicles,
   getSingleVehicle,
   updateVehicle,
+  deleteVehicle,
 };
