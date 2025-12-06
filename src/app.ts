@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { authRoute } from "./auth/auth.route";
 import initDB from "./config/db";
 
 const app = express();
@@ -7,6 +8,8 @@ app.use(express.json());
 
 // initializing Database
 initDB();
+
+app.use("/api/v1/auth", authRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("from app ts files");
