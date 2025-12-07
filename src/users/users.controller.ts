@@ -20,22 +20,44 @@ const getAllUser = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: Request, res: Response) => {
+  const loggedInUser = req.user;
+  if (!loggedInUser) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized! User data missing",
+    });
+  }
+
+  const userIdToUpdate = req.params.id;
+
+  if (loggedInUser.role === "customer" && loggedInUser.id !== userIdToUpdate) {
+    return res.status(403).json({
+      success: false,
+      message: "You can only update your own profile!",
+    });
+  }
+
   const { name, email } = req.body;
+
   try {
-    const result = await userServices.updateUser(name, email, req.params.id!);
+    const result = await userServices.updateUser(
+      name,
+      email,
+      userIdToUpdate as string
+    );
 
     if (result.rows.length === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "User not found",
       });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "User updated successfully",
-        data: result.rows[0],
-      });
     }
+
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: result.rows[0],
+    });
   } catch (err: any) {
     res.status(500).json({
       success: false,

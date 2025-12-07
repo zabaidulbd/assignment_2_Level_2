@@ -8,14 +8,18 @@ const getAllUser = async () => {
   });
   return users;
 };
-
 const updateUser = async (name: string, email: string, id: string) => {
   const result = await pool.query(
     `UPDATE Users SET name=$1, email=$2 WHERE id=$3 RETURNING *`,
     [name, email, id]
   );
 
-  return result;
+  const user = result.rows[0];
+  if (user) {
+    delete user.password;
+  }
+
+  return { rows: result.rows };
 };
 
 const deleteUser = async (id: string) => {
