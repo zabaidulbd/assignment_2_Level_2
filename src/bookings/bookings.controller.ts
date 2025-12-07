@@ -3,15 +3,24 @@ import { bookingServices } from "./bookings.service";
 
 const createBookings = async (req: Request, res: Response) => {
   try {
-    const result = await bookingServices.createBookings(req.body);
+    const customer_id = Number(req.user?.id);
+
+    if (!customer_id) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: user not found",
+      });
+    }
+
+    const booking = await bookingServices.createBooking(req.body, customer_id);
 
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
-      data: result.rows[0],
+      data: booking.rows[0],
     });
   } catch (err: any) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       message: err.message,
     });

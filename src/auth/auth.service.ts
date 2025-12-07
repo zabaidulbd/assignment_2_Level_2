@@ -54,6 +54,7 @@ const signinUseFromDB = async (email: string, password: string) => {
 
   const token = jwt.sign(
     {
+      id: matchedUser.id,
       name: matchedUser.name,
       email: matchedUser.email,
       role: matchedUser.role,
