@@ -17,21 +17,28 @@ const createVehicles = async (req: Request, res: Response) => {
     });
   }
 };
-
 const getVehicles = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.getVehicles();
+    const vehicles = result.rows;
 
+    if (vehicles.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No vehicles found",
+        data: [],
+      });
+    }
     res.status(200).json({
       success: true,
       message: "Vehicles retrieved successfully",
-      data: result.rows,
+      data: vehicles,
     });
   } catch (err: any) {
     res.status(500).json({
       success: false,
       message: err.message,
-      datails: err,
+      details: err,
     });
   }
 };
