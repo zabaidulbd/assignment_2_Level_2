@@ -43,7 +43,7 @@ const signinUser = async (req: Request, res: Response) => {
     );
     return res.status(201).json({
       success: true,
-      message: "User signin Successfully",
+      message: "Login sucessfull",
       data: result,
     });
   } catch (error: any) {

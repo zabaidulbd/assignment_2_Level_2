@@ -44,21 +44,28 @@ const signinUseFromDB = async (email: string, password: string) => {
   if (result.rows.length === 0) {
     throw new Error("User not found!");
   }
-  const user = result.rows[0];
+  const matchedUser = result.rows[0];
 
-  const match = await bcrypt.compare(password, user.password);
+  const match = await bcrypt.compare(password, matchedUser.password);
 
   if (!match) {
     throw new Error("password does not matched!");
   }
 
   const token = jwt.sign(
-    { name: user.name, email: user.email, role: user.role },
+    {
+      name: matchedUser.name,
+      email: matchedUser.email,
+      role: matchedUser.role,
+    },
     config.jwtSecret as string,
     {
       expiresIn: "7d",
     }
   );
+  const userRow = result.rows[0];
+  const user = { ...userRow };
+  delete (user as any).password;
 
   return { token, user };
 };
