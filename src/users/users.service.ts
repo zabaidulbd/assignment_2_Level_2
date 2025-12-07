@@ -2,7 +2,11 @@ import { pool } from "../config/db";
 
 const getAllUser = async () => {
   const result = await pool.query(`SELECT * FROM Users`);
-  return result;
+  const users = result.rows.map((user) => {
+    const { password, ...cleanUser } = user;
+    return cleanUser;
+  });
+  return users;
 };
 
 const updateUser = async (name: string, email: string, id: string) => {
