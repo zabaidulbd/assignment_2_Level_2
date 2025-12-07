@@ -3,14 +3,7 @@ import { authServices } from "./auth.service";
 
 const signupUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, phone } = req.body;
-
-    // if (!name || !email || !password || !phone) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "All fields are required",
-    //   });
-    // }
+    const { name, email, password, phone, role } = req.body;
 
     if (password.length < 6) {
       return res.status(400).json({
@@ -23,14 +16,14 @@ const signupUser = async (req: Request, res: Response) => {
       name,
       email,
       password,
-      phone
+      phone,
+      role
     );
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
       data: {
         user: result.user,
-        token: result.token,
       },
     });
   } catch (err: any) {

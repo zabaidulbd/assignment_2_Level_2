@@ -8,47 +8,31 @@ type UserRow = {
   name: string;
   email: string;
   password: string;
-  role?: string;
   phone?: string;
+  role?: string;
 };
 
 const signupUserInDB = async (
   name: string,
   email: string,
   password: string,
-  phone: string
+  phone: string,
+  role: string
 ) => {
   const emailLower = email.trim().toLowerCase();
-
-  // check if user exists
-  // const exists = await pool.query<UserRow>(
-  //   "SELECT id FROM users WHERE LOWER(email)=$1",
-  //   [emailLower]
-  // );
-  // if (exists.rowCount > 0) {
-  //   return { success: false, reason: "email_exists" } as const;
-  // }
-
-  // hash password
-  const hashed = await bcrypt.hash(password, 10);
-
-  // insert user, default role: customer
+  const hashedPassword = await bcrypt.hash(password, 10);
   const result = await pool.query<UserRow>(
-    `INSERT INTO users (name, email, password, phone, role)
-     VALUES ($1,$2,$3,$4,'customer')
-     RETURNING id, name, email, phone, role`,
-    [name, emailLower, hashed, phone]
+    `INSERT INTO Users (name, email, password, phone, role)
+     VALUES ($1,$2,$3,$4,$5)
+     RETURNING *`,
+    [name, emailLower, hashedPassword, phone, role]
   );
 
-  const user = result.rows[0];
+  const userRow = result.rows[0];
+  const user = { ...userRow };
+  delete (user as any).password;
 
-  // create token
-  const payload = { id: user?.id, role: user?.role };
-  const token = jwt.sign(payload, config.jwtSecret as string, {
-    expiresIn: "7d",
-  });
-
-  return { user, token };
+  return { user };
 };
 
 const signinUseFromDB = async (email: string, password: string) => {
