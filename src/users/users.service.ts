@@ -21,12 +21,29 @@ const updateUser = async (name: string, email: string, id: string) => {
 
   return { rows: result.rows };
 };
-
 const deleteUser = async (id: string) => {
-  const result = await pool.query(`DELETE FROM Users WHERE id = $1`, [id]);
+  const activeCheck = await pool.query(
+    `SELECT 1 FROM Bookings WHERE customer_id = $1 AND status = 'active' LIMIT 1`,
+    [id]
+  );
+
+  if ((activeCheck.rowCount ?? 0) > 0) {
+    throw new Error("Cannot delete user: active bookings exist");
+  }
+
+  const result = await pool.query(
+    `DELETE FROM Users WHERE id = $1 RETURNING *`,
+    [id]
+  );
 
   return result;
 };
+
+// const deleteUser = async (id: string) => {
+//   const result = await pool.query(`DELETE FROM Users WHERE id = $1`, [id]);
+
+//   return result;
+// };
 
 export const userServices = {
   getAllUser,
