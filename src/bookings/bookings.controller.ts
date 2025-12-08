@@ -29,7 +29,19 @@ const createBookings = async (req: Request, res: Response) => {
 
 const getBookings = async (req: Request, res: Response) => {
   try {
-    const result = await bookingServices.getBookings();
+    const user = req.user as any;
+
+    const role = user?.role;
+    const customerId = Number(user?.id);
+
+    if (!role || !customerId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const result = await bookingServices.getBookings(role, customerId);
 
     res.status(200).json({
       success: true,
@@ -40,11 +52,9 @@ const getBookings = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: err.message,
-      datails: err,
     });
   }
 };
-
 const updateBookings = async (req: Request, res: Response) => {
   try {
     const result = await bookingServices.updateBookings(

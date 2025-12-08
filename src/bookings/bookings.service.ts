@@ -47,9 +47,13 @@ const createBooking = async (payload: BookingPayload, customer_id: number) => {
   return bookingRes;
 };
 
-const getBookings = async () => {
-  const result = await pool.query(`SELECT * FROM Bookings`);
-  return result;
+const getBookings = async (role: string, customerId: number) => {
+  if (role === "admin") {
+    return await pool.query(`SELECT * FROM Bookings`);
+  }
+  return await pool.query(`SELECT * FROM Bookings WHERE customer_id = $1`, [
+    customerId,
+  ]);
 };
 
 const updateBookings = async (payload: Record<string, unknown>, id: string) => {
