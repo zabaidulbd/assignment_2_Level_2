@@ -18,7 +18,7 @@ app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/bookings", bookingsRoutes);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("from app ts files");
+  res.send("server is running");
 });
 
 app.use((req, res) => {
